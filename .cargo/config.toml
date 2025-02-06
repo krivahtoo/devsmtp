@@ -1,0 +1,13 @@
+[env]
+# Web frontend port
+PORT="3000"
+# SMTP server port
+SMTP_PORT="2525"
+
+# Enable logging in our app
+RUST_LOG="devsmtp=debug"
+
+# Database url
+DATABASE_URL="sqlite://test.db"
+
+JWT_SECRET="my_secure_secret"
