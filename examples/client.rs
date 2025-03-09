@@ -52,12 +52,12 @@ fn main() {
     //    .body(String::from("Be happy!"))
     //    .unwrap();
 
-    //let creds = Credentials::new("smtp_username".to_owned(), "smtp_password".to_owned());
+    let creds = Credentials::new("smtp_username".to_owned(), "smtp_password".to_owned());
 
     // Open a local connection on port 25
     let mailer = SmtpTransport::builder_dangerous("localhost")
         .port(2525)
-        //.credentials(creds)
+        .credentials(creds)
         .build();
 
     // Send the email

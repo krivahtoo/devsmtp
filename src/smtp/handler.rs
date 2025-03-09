@@ -13,14 +13,13 @@ pub async fn handle_client(mut stream: TcpStream) -> std::io::Result<()> {
 
     let (reader, mut writer) = stream.split();
     let mut reader = BufReader::new(reader);
-    let mut line = String::new();
 
     writer
         .write_all(b"220 Simple SMTP Server Ready\r\n")
         .await?;
 
     loop {
-        line.clear();
+        let mut line = String::new();
         match reader.read_line(&mut line).await {
             Ok(0) => {
                 debug!("Client disconnected: {}", peer_addr);
@@ -33,25 +32,22 @@ pub async fn handle_client(mut stream: TcpStream) -> std::io::Result<()> {
                 match command {
                     Command::Helo(v) => {
                         writer
-                            .write_all(b"250-devsmtp.com Hello, pleased to meet you\r\n250 AUTH GSSAPI DIGEST-MD5 PLAIN\r\n")
+                            .write_all(b"250 Hello, pleased to meet you\r\n")
                             .await?
                     }
                     Command::Ehlo(v) => {
                         writer
-                            .write_all(b"250 Hello, pleased to meet you\r\n")
-                            .await?
+                            .write_all(b"250-devsmtp.com Hello, pleased to meet you\r\n")
+                            .await?;
+                        writer.write_all(b"250 AUTH PLAIN\r\n").await?
                     }
                     Command::Auth(v) => {
                         writer
                             .write_all(b"235 2.7.0 Authentication successful\r\n")
                             .await?
                     }
-                    Command::MailFrom(v) => {
-                        writer.write_all(b"250 Sender OK\r\n").await?
-                    }
-                    Command::Receipient(v) => {
-                        writer.write_all(b"250 Recipient OK\r\n").await?
-                    }
+                    Command::MailFrom(v) => writer.write_all(b"250 Sender OK\r\n").await?,
+                    Command::Receipient(v) => writer.write_all(b"250 Recipient OK\r\n").await?,
                     Command::Data => {
                         writer
                             .write_all(b"354 Start mail input; end with <CRLF>.<CRLF>\r\n")

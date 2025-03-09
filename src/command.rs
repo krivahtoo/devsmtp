@@ -19,7 +19,7 @@ impl From<String> for Command {
             ["HELO", v, ..] => Command::Helo(v.to_string()),
             ["EHLO", v, ..] => Command::Ehlo(v.to_string()),
             ["HELP", v] => Command::Help(v.to_string()),
-            ["AUTH", v, ..] => Command::Auth(v.to_string()),
+            ["AUTH", _, ..] => Command::Auth(value),
             ["MAIL", v] if v.starts_with("FROM:") => {
                 Command::MailFrom(v.to_string().replace("FROM:", ""))
             }
