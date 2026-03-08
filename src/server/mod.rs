@@ -4,12 +4,14 @@ use tokio::net::TcpListener;
 use tokio_util::sync::CancellationToken;
 use tracing::{debug, info};
 
+mod routes;
+
 async fn root() -> &'static str {
     "Hello World!"
 }
 
 pub async fn start_server(token: CancellationToken) {
-    let app = Router::new().route("/", get(root));
+    let app = Router::new().route("/", get(root)).merge(routes::router());
 
     let mut listenfd = ListenFd::from_env();
     // try to first get a socket from listenfd, if that does not give us
